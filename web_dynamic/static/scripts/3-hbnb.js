@@ -8,9 +8,18 @@ function fillArticle (data, _) {
             <div class="price_by_night">${place.price_by_night}</div>
           </div>
         <div class="information">
-          <div class="max_guest">${place.max_guest} Guest${place.max_guest !== 1 ? 's' : ''}</div>
-          <div class="number_rooms">${place.number_rooms} Bedroom${place.number_rooms !== 1 ? 's' : ''}</div>
-          <div class="number_bathrooms">${place.number_bathrooms} Bathroom${place.number_bathrooms !== 1 ? 's' : ''}</div>
+          <div class="max_guest">
+          <div class="icon"></div>
+          ${place.max_guest} Guest${place.max_guest !== 1 ? 's' : ''}
+          </div>
+          <div class="number_rooms">
+          <div class="icon"></div>
+          ${place.number_rooms} Bedroom${place.number_rooms !== 1 ? 's' : ''}
+          </div>
+          <div class="number_bathrooms">
+          <div class="icon"></div>
+          ${place.number_bathrooms} Bathroom${place.number_bathrooms !== 1 ? 's' : ''}
+          </div>
         </div>
         <div class="description">
         ${place.description}
