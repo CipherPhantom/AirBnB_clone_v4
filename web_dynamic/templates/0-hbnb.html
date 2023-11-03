@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <title>AirBnB_clone</title>
 	<link rel="icon" href="{{ url_for('static', filename='images/icon.png') }}">
-	<link rel="stylesheet" href="{{ url_for('static', filename='styles/4-common.css', cache_id=cache_id) }}">
-	<link rel="stylesheet" href="{{ url_for('static', filename='styles/3-header.css', cache_id=cache_id) }}">
-	<link rel="stylesheet" href="{{ url_for('static', filename='styles/3-footer.css', cache_id=cache_id) }}">
-	<link rel="stylesheet" href="{{ url_for('static', filename='styles/6-filters.css', cache_id=cache_id) }}">
-	<link rel="stylesheet" href="{{ url_for('static', filename='styles/8-places.css', cache_id=cache_id) }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='styles/4-common.css') }}?{{ cache_id }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='styles/3-header.css') }}?{{ cache_id }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='styles/3-footer.css') }}?{{ cache_id }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='styles/6-filters.css') }}?{{ cache_id }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='styles/8-places.css') }}?{{ cache_id }}">
 </head>
 <body>
     <header>
