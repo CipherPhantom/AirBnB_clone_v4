@@ -1,6 +1,29 @@
 let placesSection;
 
 /**
+ * Callback function to setup wwebpage and also add event handlers when DOM is fully loaded
+ */
+function initScript () {
+  const amenityCheckboxes = $(".amenities input[type='checkbox']");
+  const apiStatus = $('div#api_status');
+  const search = $('button');
+  placesSection = $('section.places');
+
+  const jsonPost = {};
+  const amenityIds = [];
+  const amenityNames = [];
+
+  // Add event handler for checkboxes with callback function bound to local variables
+  amenityCheckboxes.on('click', checkboxFn.bind({}, amenityIds, amenityNames));
+
+  initialAPICall(apiStatus, jsonPost);
+
+  jsonPost.amenities = amenityIds;
+  search.on('click', filterSearch.bind({}, jsonPost));
+}
+
+
+/**
  * This callback function inserts <article> tags corresponding to the places retrieved from database
  * @param   {object} data Object containing places retrieved from database
  */
@@ -89,26 +112,4 @@ function initialAPICall (apiStatus, jsonPost) {
   });
 }
 
-/**
- * Callback fnction to setup page when DOM is fully loaded
- */
-function docReady () {
-  const checkbox = $("input[type='checkbox']");
-  const apiStatus = $('div#api_status');
-  const search = $('button');
-  placesSection = $('section.places');
-
-  const jsonPost = {};
-  const amenityIds = [];
-  const amenityNames = [];
-
-  // Add event handler for checkboxes with callback function bound to local variables
-  checkbox.on('click', checkboxFn.bind({}, amenityIds, amenityNames));
-
-  initialAPICall(apiStatus, jsonPost);
-
-  jsonPost.amenities = amenityIds;
-  search.on('click', filterSearch.bind({}, jsonPost));
-}
-
-$(document).ready(docReady);
+$(document).ready(initScript);
