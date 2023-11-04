@@ -3,19 +3,30 @@
  */
 function initScript () {
   const amenityCheckboxes = $(".amenities input[type='checkbox']");
+  const stateCheckboxes = $('.state-checkbox');
+  const cityCheckboxes = $('.city-checkbox');
+
   const apiStatus = $('div#api_status');
   const search = $('button');
 
   const jsonPost = {};
   const amenityIds = [];
   const amenityNames = [];
+  const cityIds = [];
+  const cityNames = [];
+  const stateIds = [];
+  const stateNames = [];
 
   // Add event handler for checkboxes with callback function bound to local variables
-  amenityCheckboxes.on('click', checkboxFn.bind({}, amenityIds, amenityNames));
+  amenityCheckboxes.on('click', checkboxFn.bind({}, amenityIds, amenityNames, 'amenities'));
+  cityCheckboxes.on('click', checkboxFn.bind({}, cityIds, cityNames, 'locations'));
+  stateCheckboxes.on('click', checkboxFn.bind({}, stateIds, stateNames, 'locations'));
 
   initialAPICall(apiStatus, jsonPost);
 
   jsonPost.amenities = amenityIds;
+  jsonPost.cities = cityIds;
+  jsonPost.states = stateIds;
   search.on('click', filterSearch.bind({}, jsonPost));
 }
 
@@ -73,22 +84,23 @@ function filterSearch (jsonPost) {
 
 /**
  * This callback function populates two arrays when a checkbox is clicked
- * @param   {Array} amenityIds     Array containing Ids of checked amenities
- * @param   {Array} amenityNames   Array containing Names of checked amenities
+ * @param   {Array} amenityIds     Array containing Ids of checked input checkboxes
+ * @param   {Array} amenityNames   Array containing Names of checked input checkboxes
+ * @param   {String} cls           String is the class of h4 tag to modify
  */
-function checkboxFn (amenityIds, amenityNames, e) {
+function checkboxFn (Ids, Names, cls, e) {
   const newId = $(e.target).attr('data-id');
   const newName = $(e.target).attr('data-name');
 
   if ($(e.target).is(':checked')) {
-    amenityIds.push(newId);
-    amenityNames.push(newName);
+    Ids.push(newId);
+    Names.push(newName);
   } else {
-    amenityIds.splice(amenityIds.indexOf(newId), 1);
-    amenityNames.splice(amenityNames.indexOf(newName), 1);
+    Ids.splice(Ids.indexOf(newId), 1);
+    Names.splice(Names.indexOf(newName), 1);
   }
   // Set text of h4 tag to string of all checked amentities
-  $('.amenities h4').text(amenityNames.sort().join(', '));
+  $(`.${cls} h4`).text(Names.sort().join(', '));
 }
 
 /**

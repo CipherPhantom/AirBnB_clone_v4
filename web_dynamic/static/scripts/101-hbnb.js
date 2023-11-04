@@ -3,19 +3,30 @@
  */
 function initScript () {
   const amenityCheckboxes = $(".amenities input[type='checkbox']");
+  const stateCheckboxes = $('.state-checkbox');
+  const cityCheckboxes = $('.city-checkbox');
+
   const apiStatus = $('div#api_status');
   const search = $('button');
 
   const jsonPost = {};
   const amenityIds = [];
   const amenityNames = [];
+  const cityIds = [];
+  const cityNames = [];
+  const stateIds = [];
+  const stateNames = [];
 
   // Add event handler for checkboxes with callback function bound to local variables
-  amenityCheckboxes.on('click', checkboxFn.bind({}, amenityIds, amenityNames));
+  amenityCheckboxes.on('click', checkboxFn.bind({}, amenityIds, amenityNames, 'amenities'));
+  cityCheckboxes.on('click', checkboxFn.bind({}, cityIds, cityNames, 'locations'));
+  stateCheckboxes.on('click', checkboxFn.bind({}, stateIds, stateNames, 'locations'));
 
   initialAPICall(apiStatus, jsonPost);
 
   jsonPost.amenities = amenityIds;
+  jsonPost.cities = cityIds;
+  jsonPost.states = stateIds;
   search.on('click', filterSearch.bind({}, jsonPost));
 }
 
@@ -29,31 +40,62 @@ function fillArticle (data, _) {
   placesSection.children('article').remove();
   for (const place of data) {
     const articleTag = `
-        <article>
-          <div class="title_box">
-            <h2>${place.name}</h2>
-            <div class="price_by_night">${place.price_by_night}</div>
-          </div>
+      <article>
+        <div class="title_box">
+          <h2>${place.name}</h2>
+          <div class="price_by_night">${place.price_by_night}</div>
+        </div>
         <div class="information">
           <div class="max_guest">
-          <div class="icon"></div>
-          ${place.max_guest} Guest${place.max_guest !== 1 ? 's' : ''}
+            <div class="icon"></div>
+              ${place.max_guest} Guest${place.max_guest !== 1 ? 's' : ''}
           </div>
           <div class="number_rooms">
-          <div class="icon"></div>
-          ${place.number_rooms} Bedroom${place.number_rooms !== 1 ? 's' : ''}
+            <div class="icon"></div>
+            ${place.number_rooms} Bedroom${place.number_rooms !== 1 ? 's' : ''}
           </div>
           <div class="number_bathrooms">
-          <div class="icon"></div>
-          ${place.number_bathrooms} Bathroom${place.number_bathrooms !== 1 ? 's' : ''}
+            <div class="icon"></div>
+            ${place.number_bathrooms} Bathroom${place.number_bathrooms !== 1 ? 's' : ''}
           </div>
         </div>
         <div class="description">
-        ${place.description}
+          ${place.description}
+        </div>
+        <div class="reviews">
+          <h2>Reviews</h2> <span data-id="${place.id}">show</span>
+          <ul class="hide"></ul>
         </div>
       </article>
       `;
     placesSection.append(articleTag);
+  }
+  $('article .reviews span').click(getReviews.bind({}));
+}
+
+/**
+ * This function get the reviews on a place
+ */
+function getReviews (e) {
+  const placeId = $(e.target).attr('data-id');
+  const ul = $(e.target).siblings('ul');
+
+  ul.toggleClass('show hide');
+  if (ul.hasClass('show')) {
+    $(e.target).text('hide');
+    ul.children('li').remove();
+    $.get(`http://127.0.0.1:5001/api/v1/places/${placeId}/reviews`, function (data, textStatus) {
+      for (const review of data) {
+        const reviewLI = `
+          <li>
+            <p>${review.text}</p>
+          </li>
+          `;
+        ul.append(reviewLI);
+      }
+    });
+  } else {
+    $(e.target).text('show');
   }
 }
 
@@ -73,22 +115,23 @@ function filterSearch (jsonPost) {
 
 /**
  * This callback function populates two arrays when a checkbox is clicked
- * @param   {Array} amenityIds     Array containing Ids of checked amenities
- * @param   {Array} amenityNames   Array containing Names of checked amenities
+ * @param   {Array} amenityIds     Array containing Ids of checked input checkboxes
+ * @param   {Array} amenityNames   Array containing Names of checked input checkboxes
+ * @param   {String} cls           String is the class of h4 tag to modify
  */
-function checkboxFn (amenityIds, amenityNames, e) {
+function checkboxFn (Ids, Names, cls, e) {
   const newId = $(e.target).attr('data-id');
   const newName = $(e.target).attr('data-name');
 
   if ($(e.target).is(':checked')) {
-    amenityIds.push(newId);
-    amenityNames.push(newName);
+    Ids.push(newId);
+    Names.push(newName);
   } else {
-    amenityIds.splice(amenityIds.indexOf(newId), 1);
-    amenityNames.splice(amenityNames.indexOf(newName), 1);
+    Ids.splice(Ids.indexOf(newId), 1);
+    Names.splice(Names.indexOf(newName), 1);
   }
   // Set text of h4 tag to string of all checked amentities
-  $('.amenities h4').text(amenityNames.sort().join(', '));
+  $(`.${cls} h4`).text(Names.sort().join(', '));
 }
 
 /**
