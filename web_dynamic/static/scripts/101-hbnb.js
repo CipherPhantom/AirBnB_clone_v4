@@ -1,3 +1,14 @@
+let allUsers;
+
+/**
+ * IIFE Function to retrieve all users from the database
+ */
+(function getAllUsers () {
+  $.get('http://127.0.0.1:5001/api/v1/users', function (data, _) {
+    allUsers = data;
+  });
+})();
+
 /**
  * Callback function to setup wwebpage and also add event handlers when DOM is fully loaded
  */
@@ -79,15 +90,20 @@ function fillArticle (data, _) {
 function getReviews (e) {
   const placeId = $(e.target).attr('data-id');
   const ul = $(e.target).siblings('ul');
+  const reviewH2 = $(e.target).siblings('h2');
 
   ul.toggleClass('show hide');
   if (ul.hasClass('show')) {
     $(e.target).text('hide');
     ul.children('li').remove();
     $.get(`http://127.0.0.1:5001/api/v1/places/${placeId}/reviews`, function (data, textStatus) {
+      reviewH2.text(`${data.length || ''} Reviews`);
       for (const review of data) {
+        const date = new Intl.DateTimeFormat(navigator.language, { dateStyle: 'long' }).format(new Date(review.updated_at));
+        const user = allUsers ? allUsers.find((el, _) => el.id === review.user_id) || '' : '';
         const reviewLI = `
           <li>
+            <h3>From ${user && user.first_name} the ${date}</h3>
             <p>${review.text}</p>
           </li>
           `;
@@ -96,6 +112,7 @@ function getReviews (e) {
     });
   } else {
     $(e.target).text('show');
+    reviewH2.text('Reviews');
   }
 }
 

@@ -128,3 +128,7 @@ article .reviews ul li p {
 .hide {
     display: none;
 }
+
+article .reviews > span {
+	cursor: pointer;
+}
